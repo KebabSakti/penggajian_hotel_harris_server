@@ -1,19 +1,20 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+Route::post('login', [App\Http\Controllers\AuthController::class, 'login']);
+Route::get('check', [App\Http\Controllers\AuthController::class, 'check']);
+Route::get('logout', [App\Http\Controllers\AuthController::class, 'logout']);
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('mix/salary_form_data', [App\Http\Controllers\Api\MixDataController::class, 'salaryFormData']);
+    Route::post('salary', [App\Http\Controllers\Api\SalaryController::class, 'index']);
+    Route::post('salary/create', [App\Http\Controllers\Api\SalaryController::class, 'create']);
+    Route::post('salary/update', [App\Http\Controllers\Api\SalaryController::class, 'update']);
+    Route::post('salary/delete', [App\Http\Controllers\Api\SalaryController::class, 'delete']);
+    Route::post('salary/import', [App\Http\Controllers\Api\SalaryController::class, 'import']);
+
+    Route::group(['prefix' => 'import'], function () {
+        Route::post('salary', [App\Http\Controllers\Api\ImportController::class, 'salary']);
+    });
 });
