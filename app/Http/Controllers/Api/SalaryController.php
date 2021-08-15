@@ -75,9 +75,4 @@ class SalaryController extends Controller
 
         return response()->json([], 200);
     }
-
-    public function import(Request $request)
-    {
-        return response()->json($request->file('file')->getClientOriginalName());
-    }
 }

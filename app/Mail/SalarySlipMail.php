@@ -11,14 +11,18 @@ class SalarySlipMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    private $data;
+    private $file;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($data, $file)
     {
-        //
+        $this->data = $data;
+        $this->file = $file;
     }
 
     /**
@@ -28,10 +32,18 @@ class SalarySlipMail extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.salary_slip')
-            ->attach('./files/employee.pdf', [
-                'as' => 'Salary Slip.pdf',
-                'mime' => 'application/pdf',
-            ]);
+        $data = $this->data;
+
+        $gross_income = $data->salary_basic + $data->salary_service_charge + $data->salary_overtime + $data->salary_incentive + $data->salary_meal_allowance + $data->salary_additional_service;
+        $total_deduction = $data->salary_pph + $data->salary_jht + $data->salary_jp + $data->salary_bpjs + $data->salary_misc + $data->salary_service_charge;
+
+        return $this->markdown('emails.salary_slip', [
+            'data' => $data,
+            'gross_income' => $gross_income,
+            'total_deduction' => $total_deduction
+        ])->attach('./files/' . $this->file, [
+            'as' => $this->file,
+            'mime' => 'application/pdf',
+        ]);
     }
 }
